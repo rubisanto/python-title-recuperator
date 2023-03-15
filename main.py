@@ -1,26 +1,36 @@
+
 import requests
 from bs4 import BeautifulSoup
 
 
-def title_recuperation(url):
+def fetch_content(url):
     try:
         response = requests.get(url)
         response.raise_for_status()
-        # if the adress is not valid
+        return response.content
     except requests.exceptions.RequestException as e:
-        return f"Erreur lors de l'accès à l'url: {e}"
+        print(f"Erreur lors de l'accès à l'URL: {e}")
+        return None
 
-    content = response.content
 
+def extract_title(content):
     soup = BeautifulSoup(content, 'html.parser')
     title = soup.find('title')
 
     if title:
-        return title.text
+        return title.get_text()
     else:
-        return 'title not found !'
+        return 'Titre non trouvé !'
 
 
-url = input('entrer l\'url de la page : ')
-title = title_recuperation(url)
-print('le titre de la page est : ', title)
+def main():
+    url = input("Entrez l'URL de la page : ")
+    content = fetch_content(url)
+
+    if content:
+        title = extract_title(content)
+        print('Le titre de la page est :', title)
+
+
+if __name__ == "__main__":
+    main()
